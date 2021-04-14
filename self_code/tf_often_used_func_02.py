@@ -1,4 +1,5 @@
-# tensor2.0常用函数的记录,测试从git拉回修改的代码。
+# tensor2.0常用函数的记录,包括使用GradientTape进行求导，one-hot编码，softmax归一化，梯度下降时的assign_sub自更新
+# argmax，argmin，tf.equal
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 关闭log信息
 import tensorflow as tf
@@ -50,5 +51,6 @@ print('每一行最大值的索引为：', tf.argmax(input=test, axis=1))
 a = np.arange(12).reshape((3, 4))
 b = np.arange(12, 24).reshape((3, 4))
 print(tf.equal(a, b))
+
 # 如果要统计相等的个数，可以使用cast将bool强转为int32，然后使用reduce_sum
 print(tf.reduce_sum(tf.cast(x=tf.equal(a, b), dtype=tf.int32)).numpy())
