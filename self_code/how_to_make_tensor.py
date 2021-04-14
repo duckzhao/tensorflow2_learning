@@ -14,6 +14,8 @@ tf.constant(
     name='Const',   # 生成张量的名字，不指定名字时系统应该会默认分配一个随机名字
     verify_shape=False， # 是否验证value和shape大小匹配， 一般不用传入
 )
+
+张量一共有三个重要的属性：A.shape， A.dtype， A.numpy()->打印出值
 '''
 
 # 1.生成数值型张量，其shape为空
