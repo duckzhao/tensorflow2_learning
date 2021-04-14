@@ -1,4 +1,4 @@
-# tensor2.0常用函数的记录
+# tensor2.0常用函数的记录,测试从git拉回修改的代码。
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 关闭log信息
 import tensorflow as tf
