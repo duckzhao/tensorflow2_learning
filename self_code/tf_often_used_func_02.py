@@ -1,5 +1,5 @@
 # tensor2.0常用函数的记录,包括使用GradientTape进行求导，one-hot编码，softmax归一化，梯度下降时的assign_sub自更新
-# argmax，argmin，tf.equal
+# argmax，argmin，tf.equal->用于判断两个矩阵中相同元素数量的技巧
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 关闭log信息
 import tensorflow as tf
