@@ -1,4 +1,7 @@
-# tensor2.0常用函数的记录
+# tensor2.0常用函数的记录，包括强制转换数据类型，计算张量某个维度上的最大/最小值
+# 可训练的变量的生成，tensor的四则运算（数字运算，非矩阵运算），开平方操作
+# 矩阵乘法，tf.data的一点知识
+
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 关闭log信息
 import tensorflow as tf
