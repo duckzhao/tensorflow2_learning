@@ -5,15 +5,27 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 关闭log信息
 import tensorflow as tf
 import numpy as np
 
-# 1.使用tf.GradientTape 计算某个变量的梯度
+# 1.使用tf.GradientTape 计算某个变量的梯度/偏导---计算时候都是返回的数字结果，不是带有公式的那种，求导结果也都是数字
+# 在 tf.GradientTape() 的上下文内，“所有计算步骤”都会被记录以用于求导
 with tf.GradientTape() as tape:
-    # 定义一个变量w，且赋予初值
-    w = tf.Variable(tf.constant(value=3.))
+    # 定义一个变量w，且赋予初值.变量与普通张量的一个重要区别是其默认能够被 TensorFlow 的自动求导机制所求导，因此往往被用于定义机器学习模型的参数
+    w = tf.Variable(tf.constant(value=3.))  # 可以直接写 3.
     # 定义一个损失函数loss，为w平方
-    loss = tf.square(w)
+    loss = tf.square(w)  # 会返回一个当前点的数值型loss值
     # 计算loss函数对当前w值求偏导的结果---即当前loss函数关于w的梯度, target目标函数，sources求导变量
     grad = tape.gradient(target=loss, sources=w)
-print(grad)
+print('变量w=3.时在函数w^2中求导数的结果为：', grad)
+
+
+# 对于“多个变量”同时“求偏导”的示例如下：
+X = tf.constant(np.arange(1, 5).reshape(2, 2), dtype=tf.float32)
+y = tf.constant([[1.], [2.]])
+w = tf.Variable(initial_value=[[1.], [2.]])
+b = tf.Variable(initial_value=1.)
+with tf.GradientTape() as tape:
+    L = tf.reduce_sum(tf.square(tf.matmul(X, w) + b - y))   # 计算结果为数值型tensor
+w_grad, b_grad = tape.gradient(L, [w, b])   # 以列表形式传入变量，则返回多个偏导结果->代入一个变量的当前值，求另一个变量的当前点偏导值
+print(L, w_grad, b_grad)
 
 
 # 2.one_hot编码，主要用于将label列，转换为矩阵形式表示，label所在编码值为1，其余值为0，矩阵每行仅有1个1，表示当前label
