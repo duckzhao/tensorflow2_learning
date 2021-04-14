@@ -1,4 +1,4 @@
-# 生成常量-张量的各种方法记录
+# 生成固定值常量-张量，以及随机数的各种方法记录
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 关闭log信息
