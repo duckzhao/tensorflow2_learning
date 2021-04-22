@@ -33,9 +33,8 @@ https://tf.wiki/zh_hans/basic/models.html#zh-hans-custom-layer
 https://blog.csdn.net/wss794/article/details/105207494/
 tf.keras.callbacks.TensorBoard利用该api即可，如果想在远程电脑服务器上开启tensorboard服务，然后在本地电脑上看，需要使用mobaxterm建立映射隧道
 https://blog.csdn.net/axept/article/details/115016329 然后cd到tensorboard日志文件夹保存的上层目录，
-terminal输入tensorboard --logdir="logs"即可   "logs"指向保存tensorboard logs的文件夹名称。似乎linux上保存的logs，
-无法查看graphs结果，其余都可以正常查看，
-linux上保存的logs文件夹可以拖到windows上使用tensorboard查看
+terminal输入tensorboard --logdir="logs"即可   "logs"指向保存tensorboard logs的文件夹名称。
+似乎linux上保存的logs，无法查看graphs结果，其余可视化指标都可以正常查看，linux上保存的logs文件夹可以拖到windows上使用tensorboard查看
 
 如果使用更加自定义的logs保存模式，可以参考 https://tf.wiki/zh_hans/basic/tools.html#tensorboard这种方式
 '''
