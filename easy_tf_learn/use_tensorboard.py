@@ -34,8 +34,15 @@ https://blog.csdn.net/wss794/article/details/105207494/
 tf.keras.callbacks.TensorBoard利用该api即可，如果想在远程电脑服务器上开启tensorboard服务，然后在本地电脑上看，需要使用mobaxterm建立映射隧道
 https://blog.csdn.net/axept/article/details/115016329 然后cd到tensorboard日志文件夹保存的上层目录，
 terminal输入tensorboard --logdir="logs"即可   "logs"指向保存tensorboard logs的文件夹名称。
-似乎linux上保存的logs，无法查看graphs结果，其余可视化指标都可以正常查看，linux上保存的logs文件夹可以拖到windows上使用tensorboard查看
+！！！注意tensorboard一般没法记录动态图结构，即class模式自定义的网络图---即时模式，但是sequential结构他就能记录，主要是由于tf在进行训练的时候，
+他为了加快速度，优化矩阵运算，都是用的静态图去记录的图结构，我们现在改成了动态图他就不好弄了，所以需要我们手动转换下，在动态图的model类的call函数
+上加一个修饰器，@tf.function    有了这个之后，tf就会在model.compile的的时候，帮我们把call中的即时执行模式的动态图，转为静态图去执行，
+这样就能trace到图结构，和一些训练的中间矩阵参数的变化了。(sequential结构可以自动记录图结构的) （如果有block应该怎么弄？）
+还有一个就是，想看图结构的时候，可以只在很小的数据集上跑一个batch_size就行了，否则会保存特别大的logs文件，导致训练速度慢，tf也会打印warning信息的
+见 https://www.bilibili.com/video/BV1K7411J75M?p=19&spm_id_from=pageDriver
 
+
+linux上保存的logs文件夹可以拖到windows上使用tensorboard查看
 如果使用更加自定义的logs保存模式，可以参考 https://tf.wiki/zh_hans/basic/tools.html#tensorboard这种方式
 '''
 
@@ -159,6 +166,7 @@ if os.path.exists(check_point_path + '.index'):
     print('-------------load the mode1-------------')
     baseline_model.load_weights(check_point_path)
 
+# 里面有save_freq参数可以指定保存cp的频率
 cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=check_point_path, save_weights_only=True, save_best_only=True)
 
 # 新增设置tensorboard观察训练过程中的参数变化情况
