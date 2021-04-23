@@ -95,3 +95,59 @@ for i, j in temp_dataset:   # i,j都是标量tensor
     print(i, j)
     break
 
+
+'''一般而言我们在批训练模型时，都是使用map、shuffle、batch后的mnist_dataset1遍历进行的，但实际上map这类操作在执行这一行代码的时候并没有就对
+原始的数据集mnist_dataset直接处理，而是定义了这样一个处理方式，真正的处理是在我们使用 for循环遍历提取 mnist_dataset1 中的数据时处理的，
+这个时候就有一个问题，准备数据是cpu的工作，训练数据的gpu的工作，这默认是一个串行过程，准备数据时gpu处于idle状态，降低了gpu的利用率，和训练速度
+因此如果我们能把准备输出时的cpu和训练的gpu变为并行过程，就不会浪费了.
+Dateset对象提供了一个prefetch()方法，使得我们可以让数据集对象 Dataset 在训练时预取出若干个元素，使得在 GPU 训练的同时 CPU 可以准备数据，
+使用过程非常简单，仅需在Dataset对象 提取、遍历送入训练前加上一句，其中buffer_size当前表示由 TensorFlow 自动选择合适的数值：
+mnist_dataset = mnist_dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
+'''
+# 如对82行代码做如下改变
+mnist_dataset1 = mnist_dataset.shuffle(buffer_size=10000).batch(4)
+mnist_dataset1 = mnist_dataset1.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)  # 开启数据预加载
+for images, labels in mnist_dataset1:       # 预加载的数据在这一行被送入
+    for index in range(images.shape[0]):
+        plt.subplot(1, 4, index+1)
+        plt.title(labels.numpy()[index])
+        plt.imshow(images.numpy()[index])
+    plt.show()
+    break
+
+
+'''
+对上面的Dataset数据准备过程再进行深入理解，实际上cpu仅执行io操作或者一些图像处理操作时有用，map虽然是预定义的，但实际在110行数据加载时候，
+才对当前批的读入数据进行处理，因此map操作是可以利用gpu资源的，只需要加入这句代码，其中2参数可以修改为tf.data.experimental.AUTOTUNE
+'''
+mnist_dataset = mnist_dataset.map(map_func=rot90, num_parallel_calls=2)
+
+
+'''
+对于构建好的Dataset数据集的使用：dataset返回的是一个py的可迭代对象，所以可以通过for来使用，要注意的是from_tensor_slices方法传入的tuple可以
+不止两个元素，多个也可以，该函数仅作横向拼接，类似于zip效果，因此可以使用如下调用方式
+dataset = tf.data.Dataset.from_tensor_slices((A, B, C, ...))
+for a, b, c, ... in dataset:
+    # 对张量a, b, c等进行操作，例如送入模型进行训练
+也可以使用 iter() 显式创建一个 Python 迭代器并使用 next() 获取下一个元素，不过不如for循环直观
+dataset = tf.data.Dataset.from_tensor_slices((A, B, C, ...))
+it = iter(dataset)
+a_0, b_0, c_0, ... = next(it)
+a_1, b_1, c_1, ... = next(it)
+'''
+
+'''
+实际上在使用model.fit时，我们可以不用x=train_x, y=train_y这样传入，可以直接传入一个包含x和y的dataset (x,y) 格式作为x，忽略y的传入，
+同时因为我们已经在前面指定了batch，所以fit参数里也不用写batch_size参数了，这样的好处是①提高cpu、gpu的利用率；②不用一次加载全部数据（可以使用
+tf的io操作，结合map从路径数据集中按批加载训练数据，不会内存溢出）------当然如果dataset已经把图片全部加载到内存里了，map部分的分批处理也能节约内存.
+
+传入方式化简如下：原始mnist  model.fit(x=train_data, y=train_label, epochs=num_epochs, batch_size=batch_size)
+化简后mnist： model.fit(mnist_dataset, epochs=num_epochs)
+
+p.s. 再使用evaluate()函数传入测试集评估model时，也可以直接传入dataset对象
+'''
+
+
+'''
+p.s. 接下来 基于 tf.data 和 Dataset 对象完成猫狗二分类的任务 ，见 cats_vs_dogs_classify.py
+'''
