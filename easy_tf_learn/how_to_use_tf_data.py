@@ -52,7 +52,7 @@ def rot90(image, label):
     image = tf.image.rot90(image)
     return image, label
 # 返回一个新的数据集，格式和原来数据集保持一致，因为我们f函数 输入参数和输出参数是一致的
-mnist_dataset1 = mnist_dataset.map(rot90)
+mnist_dataset1 = mnist_dataset.map(map_func=rot90)
 for image, label in mnist_dataset1:
     plt.title(label.numpy())
     plt.imshow(image.numpy())
@@ -60,13 +60,38 @@ for image, label in mnist_dataset1:
     break
 
 # 使用 Dataset.batch() 将数据集划分批次，每个批次的大小为 4：划分后每个迭代对象中的样本数为batch个（变成一个张量了）
+# 这样做的目的在于我们构建自己的model时，如果想采用自写epoch和batch_size循环去训练model，每次给model喂入batch_size时都要自己写一个load_data
+# 函数，来加载指定batch_size的数据，比较麻烦，我们可以直接使用dataset1 = dataset.batch(batch_size)来自动分组数据集，然后只需要遍历dataset1
+# 中的子元素，batch_size大小的张量特征和标签元组对，直接喂入model进行训练即可，比较简单
 mnist_dataset1 = mnist_dataset.batch(4)
-for image, label in mnist_dataset1:     # image: [4, 28, 28, 1], labels: [4]
+for images, labels in mnist_dataset1:     # image: [4, 28, 28, 1], labels: [4]
     for index in range(4):
         plt.subplot(1, 4, index+1)
-        plt.title(label.numpy()[index])
-        plt.imshow(image.numpy()[index])
+        plt.title(labels.numpy()[index])
+        plt.imshow(images.numpy()[index])
     plt.show()
     break
 
-# todo: 使用 Dataset.shuffle() 将数据打散后再设置批次，缓存大小设置为 10000：
+# tf.random.set_seed(111)   如果指定了全局的yf random seed，则每次shuffle的结果一致
+
+# 使用 Dataset.shuffle() 可以将数据随机乱序，这样可以保证每批次训练的时候所用到的数据集是不一样的，可以提高模型训练效果
+# shuffle的功能为打乱dataset中的元素，它有一个参数buffersize，表示打乱时使用的buffer的大小，不设置会报错，
+# buffer_size=1:不打乱顺序，既保持原序， buffer_size越大，打乱程度越大
+# 注意：shuffle的顺序很重要，应该先shuffle再batch，如果先batch后shuffle的话，那么此时就只是对batch进行shuffle，而batch里面的数据顺序依旧是有序的，那么随机程度会减弱。
+# 如下所示，先以1w的混乱度打散原始数据集中的标签对，然后再按照每批4个进行分组，得到mnist_dataset1
+mnist_dataset1 = mnist_dataset.shuffle(buffer_size=10000).batch(4)
+for images, labels in mnist_dataset1:
+    for index in range(images.shape[0]):
+        plt.subplot(1, 4, index+1)
+        plt.title(labels.numpy()[index])
+        plt.imshow(images.numpy()[index])
+    plt.show()
+    break
+
+# 使用 dataset.repeat(count=None) 使得dataset中的数据集重复count次，实际上就是直接复制count次，主要用于完成epoch重复功能
+temp_dataset = tf.data.Dataset.from_tensor_slices((np.arange(12), np.arange(12, 24)))
+temp_dataset = temp_dataset.repeat(count=2)
+for i, j in temp_dataset:   # i,j都是标量tensor
+    print(i, j)
+    break
+
