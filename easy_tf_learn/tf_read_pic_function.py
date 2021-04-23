@@ -1,6 +1,6 @@
 '''
 展示使用tensorflow读取图片的多种方式
-* 小心坑：tf.image.resize在对图像resize后，会造成像素越界的情况，其直接反应就是 resize后返回的 image_resized已经无法使用plt绘图了，
+* 小心坑：tf.image.resize在对图像resize后，可能会造成像素越界的情况，其直接反应就是 resize后返回的 image_resized已经无法使用plt绘图了，
 * 画出来的图片完全失真。resize后的tensor类型为float32，而像素要求是 uint8。如果我们还希望对resize后的图片进行可视化，则应在return前加上
 * tf.cast完成强制类型转换，例read_singel_pic_0。
 
@@ -18,7 +18,8 @@ def read_singel_pic_0(filepath):
     image_decoded = tf.image.decode_jpeg(contents=image_str)
     print('转换前：', image_decoded.dtype, image_decoded.shape)
     image_decoded = tf.image.resize(image_decoded, size=[256, 256])
-    print('转换后：', image_decoded.dtype, image_decoded.shape)  # 变为float32类型，且存在像素溢出问题
+    print('转换后：', image_decoded.dtype, image_decoded.shape)  # 变为float32类型，且可能存在像素溢出问题
+    # print(image_decoded)
     return tf.cast(image_decoded, dtype=tf.uint8)   # 强转为正常像素
 
 
