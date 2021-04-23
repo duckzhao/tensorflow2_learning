@@ -86,6 +86,7 @@ class ResBlock(tf.keras.Model):
 
         self.act2 = Activation('relu')  # 这个激活是跳连相加后一起激活
 
+    @tf.function
     def call(self, inputs, training=None, mask=None):
         x = self.conv1(inputs)
         x = self.bn1(x)
@@ -142,9 +143,10 @@ class ResNet(tf.keras.Model):
         # 4.
         self.dense = Dense(units=10, activation='softmax', kernel_regularizer=tf.keras.regularizers.l2())
 
+    @tf.function
     def call(self, inputs, training=None, mask=None):
         x = self.conv1(inputs)
-        print('call中的自定义打印任务，打印训练中间变量：', x.shape)   # 只会打印2次
+        # print('call中的自定义打印任务，打印训练中间变量：', x.shape)   # 只会打印2次
         x = self.bn1(x)
         x = self.act1(x)
         x = self.blocks(x)
@@ -174,6 +176,7 @@ tensorboard_log_path = './logs/'
 # 如果该地址不存在就创建一个logs文件夹
 if not os.path.exists(tensorboard_log_path):
     os.mkdir(tensorboard_log_path)
+# 可以每个batch保存一次loss或者别的信息，指定 updata_freq='batch'即可
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=tensorboard_log_path, histogram_freq=1)
 
 
