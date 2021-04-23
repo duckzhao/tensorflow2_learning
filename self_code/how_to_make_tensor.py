@@ -74,3 +74,10 @@ print('符合均匀分布的随机数张量', random_uniform)
 # 9.将tensor转为numpy格式矩阵，不能改变维度和类型
 a = random_uniform.numpy()
 print('将tensor转为numpy：', a)
+
+# 10.构造str类型的tensor, dtype会自动解析为string=tf.string，似乎是以 b'xixixi' 二进制表示解析的
+str_tensor = tf.constant(value='xixixi')
+print('str类型的字符tensor', str_tensor)
+# 一般我们都是给里面存大量的pic路径，然后配合tf.data map去读取的,dtype还是string
+str_list_tensor = tf.constant(['zk', 'lwk'])
+print('list形式传入的str类型的字符tensor', str_list_tensor)
