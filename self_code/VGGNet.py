@@ -100,7 +100,7 @@ class VGGNet(tf.keras.Model):
         x = self.pool2(x)
         x = self.drop2(x)
 
-        x = self.conv3(inputs)
+        x = self.conv3(x)
         x = self.bn3(x)
         x = self.act3(x)
 
@@ -110,11 +110,11 @@ class VGGNet(tf.keras.Model):
         x = self.pool4(x)
         x = self.drop4(x)
 
-        x = self.conv5(inputs)
+        x = self.conv5(x)
         x = self.bn5(x)
         x = self.act5(x)
 
-        x = self.conv6(inputs)
+        x = self.conv6(x)
         x = self.bn6(x)
         x = self.act6(x)
 
@@ -124,11 +124,11 @@ class VGGNet(tf.keras.Model):
         x = self.pool7(x)
         x = self.drop7(x)
 
-        x = self.conv8(inputs)
+        x = self.conv8(x)
         x = self.bn8(x)
         x = self.act8(x)
 
-        x = self.conv9(inputs)
+        x = self.conv9(x)
         x = self.bn9(x)
         x = self.act9(x)
 
@@ -138,11 +138,11 @@ class VGGNet(tf.keras.Model):
         x = self.pool10(x)
         x = self.drop10(x)
 
-        x = self.conv11(inputs)
+        x = self.conv11(x)
         x = self.bn11(x)
         x = self.act11(x)
 
-        x = self.conv12(inputs)
+        x = self.conv12(x)
         x = self.bn12(x)
         x = self.act12(x)
 
