@@ -48,6 +48,9 @@ tf.data.Dataset 类为我们提供了多种数据集预处理方法。
 # f函数的参数应该和当前的dataset迭代对象保持一致，比如用mnist数据集生成dataset对象时时，每一个dataset迭代对象是一个tensor，他的构成是 特征
 # 和标签，所以dataset.map（f）这个f就需要有两个参数，一个参数接收特征，一个参数接收label。并且最好返回两个参数，保持源数据集格式不变化，但可以
 # 对传入的特征在f中进行处理，比如图片增强，旋转，二值化等等。        这样处理的好处是批操作。
+# 实际上map函数对输入输出没要求，可以通过map函数以后，改变dataset的列数维度，一列到两列，两列到一列都行，只要return时候的变量是用逗号隔开的，
+# 这两列数据就可以如 for image, label in mnist_dataset1: 分开遍历 image, label这两个map函数返回值，如果返回三个，
+# 在fit时候，最后一个是y，其余都是x，当作多输入训练处理。（model call函数的input怎么处理？ input[0], input[1]来接收？）
 def rot90(image, label):
     image = tf.image.rot90(image)
     return image, label
