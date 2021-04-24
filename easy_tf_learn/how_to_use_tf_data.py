@@ -79,6 +79,9 @@ for images, labels in mnist_dataset1:     # image: [4, 28, 28, 1], labels: [4]
 # buffer_size=1:不打乱顺序，既保持原序， buffer_size越大，打乱程度越大
 # 注意：shuffle的顺序很重要，应该先shuffle再batch，如果先batch后shuffle的话，那么此时就只是对batch进行shuffle，而batch里面的数据顺序依旧是有序的，那么随机程度会减弱。
 # 如下所示，先以1w的混乱度打散原始数据集中的标签对，然后再按照每批4个进行分组，得到mnist_dataset1
+
+# shuffle中的buffer_size不应该设置的过大，否则会造成计算机内存ram溢出(Shuffle buffer filled)，shuffly主要起到打乱作用，如果原始数据顺序较强，且数据集很大，
+# 则不考虑用shuffly打乱，而使用 random_index = np.random.permutation(shape),使用这个index进行打乱，cats_vs_dogs_classify_vgg_model.py
 mnist_dataset1 = mnist_dataset.shuffle(buffer_size=10000).batch(4)
 for images, labels in mnist_dataset1:
     for index in range(images.shape[0]):
@@ -149,5 +152,5 @@ p.s. 再使用evaluate()函数传入测试集评估model时，也可以直接传
 
 
 '''
-p.s. 接下来 基于 tf.data 和 Dataset 对象完成猫狗二分类的任务 ，见 cats_vs_dogs_classify.py
+p.s. 接下来 基于 tf.data 和 Dataset 对象完成猫狗二分类的任务 ，见 cats_vs_dogs_classify_xxx_model.py
 '''
