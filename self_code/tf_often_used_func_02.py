@@ -1,6 +1,6 @@
 # tensor2.0常用函数的记录,包括使用GradientTape进行求导，one-hot编码，softmax归一化，梯度下降时的assign_sub自更新
 # argmax，argmin，tf.equal->用于判断两个矩阵中相同元素数量的技巧
-# tf.concat tensor拼接
+# tf.concat tensor拼接，以及tf.image.resize函数和reshape
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 关闭log信息
 import tensorflow as tf
@@ -102,3 +102,16 @@ print(tf.reduce_sum(tf.cast(x=tf.equal(a, b), dtype=tf.int32)).numpy())
 a = np.arange(12).reshape((3, 4))
 b = np.arange(12, 24).reshape((3, 4))
 print(tf.concat([a, b], axis=0))
+
+# tf.reshape实际上和 np.reshape一样，改变数组的维度，但是要求改变前后数组元素数量相同,shape以列表形式传入
+a = tf.constant(np.arange(12))
+print('改变维度前：', a.shape)
+print('改编维度后：', tf.reshape(tensor=a, shape=[3, 4]))
+
+# tf.image.resize就是真的改变了图片的大小，真实的填充或者舍弃像素,常用于统一model的输入图像大小,size以列表形式传入
+# resize时候还有一些参数，用于指定如何填充或者舍弃像素，可以使用时深入再研究下---resize不恰当可能会造成无法可视化图片
+pic = tf.io.read_file(filename='./me_6.png')
+# 解码图片的api有两个 tf.image.decode_jpeg、tf.io.decode_jpeg
+pic_decoded = tf.io.decode_jpeg(pic)
+print('resize处理前图片的shape：', pic_decoded.shape)
+print('resize处理后图片的shape：', tf.image.resize(pic_decoded, size=[256, 256]).shape)
