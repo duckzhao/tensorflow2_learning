@@ -1,3 +1,9 @@
+'''
+本代码为简单粗暴的tensorflow2中的训练猫狗案例代码，仅对原始代码做了打乱数据处理，其余基本保持不变，此代码由于没有测试集
+model checkpoint采用monitor监视，另外shuffly的batchsize不能设置过大，这是一个坑，但是也必须要打乱原始数据集，否则训练过拟合，
+可以采用np.random.permutation方式生成打乱traindata的索引，然后numpy格式取索引切片，完成训练集的重新乱序。
+由于案例中的sequential model比较简单，因此测试集准确率只有63左右，训练集准确率有90+，有过拟合现象。
+'''
 import tensorflow as tf
 import os
 import numpy as np
