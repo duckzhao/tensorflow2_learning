@@ -1,6 +1,7 @@
 # tensor2.0常用函数的记录，包括强制转换数据类型，计算张量某个维度上的最大/最小值，张量均值和 张量sum
 # 可训练的变量的生成，tensor的四则运算（数字运算，非矩阵运算），开平方操作
 # 矩阵乘法，tf.data的一点知识
+# tf打散数据
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 关闭log信息
@@ -77,3 +78,13 @@ print('构建的数据集为：', dataset)
 '''
 for element in dataset:
     print('样本的内容为：', element)
+
+# a,b是一对训练集特征和标签，现在想要打散他们，防止影响训练，但同时要保持a，b一一配对
+a = tf.constant(np.arange(12))
+b = tf.constant(np.arange(12, 24))
+print('打散前', a, b)
+# 生成乱序的索引c，含有a，b第0维的乱序index
+c = np.random.permutation(a.shape[0])
+print('乱序索引c', c)
+print('打散后', a.numpy()[c])
+print('打散后', b.numpy()[c])  # 依旧配对
