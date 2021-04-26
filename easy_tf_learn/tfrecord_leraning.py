@@ -53,6 +53,10 @@ TFRecord 可以理解为一系列序列化的 tf.train.Example元素（字典，
 '''
 feature的构建规则如下，value值必须以列表包裹才能传：
 tf.train.BytesList ：字符串或原始 Byte 文件（如图片），通过 bytes_list 参数传入一个由字符串数组初始化的 tf.train.BytesList 对象；
+如果要将ndarray的图片像素而非二进制内存图片用BytesList api存为 tfrecord文件，需要将该array.tobytes/tostring()，转为bytes格式才可以。
+并且解析的时候 要从str状态反解为像素 example_dict['image'] = tf.io.decode_raw(input_bytes=example_dict['image'], out_type=tf.uint8)
+tf.image.decode默认就是对contents – A `Tensor` of type `string`操作的，所以省略了 将example对象 解析为uint8这句。
+
 tf.train.FloatList ：浮点数，通过 float_list 参数传入一个由浮点数数组初始化的 tf.train.FloatList 对象；
 tf.train.Int64List ：整数，通过 int64_list 参数传入一个由整数数组初始化的 tf.train.Int64List 对象。
 '''
