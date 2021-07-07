@@ -46,6 +46,7 @@ if os.path.exists(check_point_path+'.index'):
 
 # 新增步骤，配置控制存储模型的 ModelCheckpoint对象
 # 使用当前配置，如果模型存储路径不变，则只会保留一个模型参数文件---保留最优的？还是最新的？
+# 注意在没有验证集的时候，save_best_only需要设置为False，否则将无法保存模型到本地。save_best_only仅针对测试集val_acc,或者val_loss进行保存
 cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=check_point_path, save_best_only=True, save_weights_only=True)
 
 # 5.
